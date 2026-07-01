@@ -91,7 +91,7 @@ const AssetHistory = sequelize.define('AssetHistory', {
     primaryKey: true
   },
   action: {
-    type: DataTypes.STRING, // e.g., 'Purchased', 'Issued', 'Returned', 'Scrapped'
+    type: DataTypes.STRING, 
     allowNull: false
   },
   details: {
