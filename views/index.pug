@@ -1,0 +1,118 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Dashboard
+      p.text-secondary.mb-0 Telematics Asset Management Overview
+    .btn-group
+      a.btn.btn-primary-custom(href="/operations/issue")
+        i.fa-solid.fa-handshake.me-2
+        | Quick Issue
+
+  // Statistics Cards
+  .row.row-cols-1.row-cols-md-2.row-cols-xl-4.g-4.mb-4
+    .col
+      .glass-card.glow-card-info.h-100
+        .d-flex.justify-content-between.align-items-center
+          div
+            h6.text-secondary.text-uppercase.fw-bold.mb-1(style="font-size: 0.75rem;") Total Assets
+            h2.fw-bold.mb-0= stats.totalAssets
+          .fs-1.text-primary
+            i.fa-solid.fa-box-open
+        .mt-3.small.text-secondary
+          span.text-success.me-2
+            i.fa-solid.fa-check-circle.me-1
+            span= stats.stockAssets
+            |  in Stock
+          span.text-indigo.ms-2
+            i.fa-solid.fa-user-tag.me-1
+            span= stats.issuedAssets
+            |  Issued
+            
+    .col
+      .glass-card.glow-card-success.h-100
+        .d-flex.justify-content-between.align-items-center
+          div
+            h6.text-secondary.text-uppercase.fw-bold.mb-1(style="font-size: 0.75rem;") Stock Value
+            h2.fw-bold.mb-0 $#{stats.stockValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          .fs-1.text-success
+            i.fa-solid.fa-dollar-sign
+        .mt-3.small.text-secondary
+          span Average asset value: 
+          strong.text-light $#{stats.avgValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+
+    .col
+      .glass-card.glow-card-warning.h-100
+        .d-flex.justify-content-between.align-items-center
+          div
+            h6.text-secondary.text-uppercase.fw-bold.mb-1(style="font-size: 0.75rem;") Active Employees
+            h2.fw-bold.mb-0= stats.activeEmployees
+          .fs-1.text-warning
+            i.fa-solid.fa-user-check
+        .mt-3.small.text-secondary
+          span Inactive employees: 
+          strong.text-light= stats.inactiveEmployees
+
+    .col
+      .glass-card.glow-card-danger.h-100
+        .d-flex.justify-content-between.align-items-center
+          div
+            h6.text-secondary.text-uppercase.fw-bold.mb-1(style="font-size: 0.75rem;") Scrapped Assets
+            h2.fw-bold.mb-0= stats.scrappedAssets
+          .fs-1.text-danger
+            i.fa-solid.fa-trash-can
+        .mt-3.small.text-secondary
+          span Capital written off: 
+          strong.text-light $#{stats.scrappedValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+  .row.g-4
+    // Quick Actions
+    .col-lg-5
+      .glass-card.h-100
+        h5.fw-bold.mb-4 Quick Operations
+        .d-grid.gap-3
+          a.btn.btn-outline-light.text-start.py-3.px-4.border-secondary-subtle(href="/operations/issue" style="border-radius: 12px; background: rgba(255,255,255,0.02)")
+            .d-flex.align-items-center
+              .fs-3.text-primary.me-3
+                i.fa-solid.fa-handshake
+              div
+                .fw-bold.text-light Issue an Asset
+                small.text-secondary Assign a stock hardware item to an employee.
+                
+          a.btn.btn-outline-light.text-start.py-3.px-4.border-secondary-subtle(href="/operations/return" style="border-radius: 12px; background: rgba(255,255,255,0.02)")
+            .d-flex.align-items-center
+              .fs-3.text-warning.me-3
+                i.fa-solid.fa-arrow-rotate-left
+              div
+                .fw-bold.text-light Return an Asset
+                small.text-secondary Process returned items and log return reason.
+
+          a.btn.btn-outline-light.text-start.py-3.px-4.border-secondary-subtle(href="/operations/scrap" style="border-radius: 12px; background: rgba(255,255,255,0.02)")
+            .d-flex.align-items-center
+              .fs-3.text-danger.me-3
+                i.fa-solid.fa-ban
+              div
+                .fw-bold.text-light Scrap obsolete Asset
+                small.text-secondary Decommission broken or legacy hardware.
+
+    // Recent Audit Logs
+    .col-lg-7
+      .glass-card.h-100
+        h5.fw-bold.mb-4 Recent Audit Activity
+        if recentHistory && recentHistory.length
+          .timeline
+            each item in recentHistory
+              // determine item class based on action
+              - var actionClass = item.action.toLowerCase()
+              .timeline-item(class=actionClass)
+                .d-flex.justify-content-between.align-items-start
+                  div
+                    span.badge.mb-1.me-2(class=`badge-${actionClass === 'issued' ? 'issued' : actionClass === 'scrapped' ? 'scrapped' : actionClass === 'returned' ? 'stock' : 'stock'}` style="font-size:0.65rem") #{item.action.toUpperCase()}
+                    strong.text-light.d-inline-block= item.asset ? `${item.asset.make} ${item.asset.model} (${item.asset.uniqueId})` : 'Asset'
+                    p.text-secondary.mb-0.small.mt-1= item.details
+                  span.timeline-time= new Date(item.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})
+        else
+          .text-center.py-5
+            i.fa-solid.fa-clock.text-secondary.fs-1.mb-3
+            p.text-secondary.mb-0 No recent activities found.

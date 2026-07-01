@@ -1,0 +1,85 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Asset Master
+      p.text-secondary.mb-0 Track and configure hardware and tools
+    .d-flex.gap-2
+      a.btn.btn-outline-light(href="/history" style="border-color: var(--glass-border)")
+        i.fa-solid.fa-clock-rotate-left.me-2
+        | View History Logs
+      a.btn.btn-primary-custom(href="/assets/new")
+        i.fa-solid.fa-plus.me-2
+        | Add Asset
+
+  if success_msg
+    .alert.alert-success.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(34, 197, 94, 0.2)")
+      i.fa-solid.fa-check-circle.me-2
+      span= success_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  // Filters
+  .glass-card.mb-4.py-3
+    form(method="GET", action="/assets")
+      .row.align-items-end.g-3
+        .col-md-4
+          label.form-label.small(for="categoryFilter") Filter by Category
+          select#categoryFilter.form-select.form-select-sm(name="categoryId" onchange="this.form.submit()")
+            option(value="") -- All Categories --
+            each cat in categories
+              option(value=cat.id, selected=selectedCategory == cat.id)= cat.name
+        .col-md-4
+          label.form-label.small(for="statusFilter") Filter by Status
+          select#statusFilter.form-select.form-select-sm(name="status" onchange="this.form.submit()")
+            option(value="") -- All Active Statuses (Excl. Scrapped) --
+            option(value="Stock", selected=selectedStatus === 'Stock') In Stock
+            option(value="Issued", selected=selectedStatus === 'Issued') Issued
+            option(value="Scrapped", selected=selectedStatus === 'Scrapped') Scrapped (Report Mode)
+        .col-md-4.text-end
+          if selectedCategory || selectedStatus
+            a.btn.btn-sm.btn-outline-light(href="/assets" style="border-color: var(--glass-border)") Clear Filters
+
+  .glass-card
+    table.table.datatables.w-100
+      thead
+        tr
+          th Asset ID
+          th Serial Number
+          th Category
+          th Make / Model
+          th Value
+          th Location
+          th Status
+          th Assigned To
+          th Actions
+      tbody
+        each asset in assets
+          tr
+            td
+              code.text-light= asset.uniqueId
+            td= asset.serialNumber
+            td
+              span.badge.bg-dark.text-light= asset.category ? asset.category.name : 'Unknown'
+            td
+              strong.text-light= `${asset.make} ${asset.model}`
+            td.fw-bold.text-light $#{asset.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            td
+              i.fa-solid.fa-location-dot.text-secondary.me-1
+              span= asset.branch
+            td
+              span.badge(class=`badge-${asset.status.toLowerCase()}`)= asset.status
+            td
+              if asset.status === 'Issued' && asset.currentEmployee
+                span.text-light
+                  i.fa-solid.fa-user.me-1.text-secondary(style="font-size:0.85rem")
+                  | #{asset.currentEmployee.name}
+              else
+                span.text-secondary -
+            td
+              .btn-group
+                a.btn.btn-sm.btn-outline-indigo(href=`/assets/edit/${asset.id}` style="border-color: var(--glass-border); color: #818cf8; transition: all 0.2s")
+                  i.fa-solid.fa-pen-to-square.me-1
+                  | Edit
+                a.btn.btn-sm.btn-outline-light.ms-1(href=`/history?assetId=${asset.id}` style="border-color: var(--glass-border); color: var(--text-secondary)" title="View Audit Trail")
+                  i.fa-solid.fa-history

@@ -1,0 +1,63 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1.text-danger Scrap Asset
+      p.text-secondary.mb-0 Decommission obsolete, broken, or lost inventory items
+    a.btn.btn-outline-light(href="/assets" style="border-color: var(--glass-border)")
+      i.fa-solid.fa-arrow-left.me-2
+      | Cancel
+
+  if success_msg
+    .alert.alert-success.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(34, 197, 94, 0.2)")
+      i.fa-solid.fa-check-circle.me-2
+      span= success_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  if error_msg
+    .alert.alert-danger.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(239, 68, 68, 0.2)")
+      i.fa-solid.fa-exclamation-triangle.me-2
+      span= error_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  .row
+    .col-lg-8
+      .glass-card.border-danger-subtle
+        .alert.alert-warning.border-0.text-light(style="background: rgba(234, 179, 8, 0.15)")
+          i.fa-solid.fa-triangle-exclamation.me-2.text-warning
+          strong WARNING:
+          |  Scrapping an asset marks it as obsolete and permanently removes it from active catalogs, stock view, and issue wizards. It will only be visible in history audit reports.
+
+        form(action="/operations/scrap", method="POST")
+          .mb-4
+            label.form-label(for="assetId") Select Asset to Scrap
+            select#assetId.form-select(name="assetId", required=true)
+              option(value="" selected=true disabled=true) -- Select an Active Asset --
+              each asset in assets
+                option(value=asset.id)= `${asset.uniqueId} - ${asset.make} ${asset.model} (Status: ${asset.status}, SN: ${asset.serialNumber})`
+            .form-text.text-secondary Only non-scrapped assets are eligible to be scrapped.
+
+          .mb-4
+            label.form-label(for="reason") Reason for Decommissioning
+            select#reason.form-select(name="reason", required=true)
+              option(value="" selected=true disabled=true) -- Select Scrap Reason --
+              option(value="Hardware Failure") Unrecoverable Hardware Failure / Broken
+              option(value="Obsolete") Legacy / Obsolete Technology
+              option(value="Lost/Stolen") Lost or Stolen
+              option(value="Damaged beyond repair") Damaged beyond repair (fire, liquid, impact)
+              option(value="Other") Other (please specify in notes)
+
+          .mb-4
+            label.form-label(for="scrapDate") Date of Scrap
+            input#scrapDate.form-control(type="date", name="scrapDate", value=new Date().toISOString().split('T')[0], required=true)
+
+          .mb-4
+            label.form-label(for="notes") Decommission Notes (Optional)
+            textarea#notes.form-control(name="notes", rows="3", placeholder="Provide detailed reasoning, salvage/disposal details, or police report file reference numbers...")
+
+          .d-flex.gap-2.mt-4
+            button.btn.btn-danger(type="submit" style="background: linear-gradient(135deg, #ef4444, #dc2626); border: none; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3)")
+              i.fa-solid.fa-ban.me-2
+              | Confirm Decommission / Scrap
+            a.btn.btn-outline-light(href="/" style="border-color: var(--glass-border)") Cancel

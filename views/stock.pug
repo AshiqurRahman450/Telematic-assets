@@ -1,0 +1,54 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Stock View
+      p.text-secondary.mb-0 Bird's eye view of assets ready to be issued
+    a.btn.btn-primary-custom(href="/operations/issue")
+      i.fa-solid.fa-handshake.me-2
+      | Issue an Asset
+
+  // Totals by Branch cards
+  h5.fw-bold.mb-3.text-secondary Totals by Branch
+  .row.row-cols-2.row-cols-md-3.row-cols-lg-6.g-3.mb-4
+    each branchTotal in branchTotals
+      .col
+        .glass-card.p-3.text-center(style="border-radius: 12px;")
+          h6.text-secondary.text-uppercase.fw-bold.mb-1.small= branchTotal.branch
+          h4.fw-bold.mb-0.text-light= branchTotal.count
+          small.text-success.fw-semibold $#{branchTotal.value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+
+  // Stock list
+  .glass-card
+    h5.fw-bold.mb-3 Assets Ready in Stock
+    table.table.datatables.w-100
+      thead
+        tr
+          th Asset ID
+          th Serial Number
+          th Category
+          th Make / Model
+          th Branch Location
+          th Value
+      tbody
+        each asset in assets
+          tr
+            td
+              code.text-light= asset.uniqueId
+            td= asset.serialNumber
+            td
+              span.badge.bg-dark.text-light= asset.category ? asset.category.name : 'Unknown'
+            td
+              strong.text-light= `${asset.make} ${asset.model}`
+            td
+              i.fa-solid.fa-location-dot.text-secondary.me-1
+              span= asset.branch
+            td.fw-bold.text-light $#{asset.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+      tfoot
+        tr(style="background-color: rgba(99, 102, 241, 0.05)")
+          td.fw-bold.text-light(colspan="4") TOTAL STOCK IN INVENTORY
+          td.fw-bold.text-light
+            span.badge.bg-indigo.px-3.py-2= totalCount
+            |  Assets
+          td.fw-bold.text-success.fs-5 $#{totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}

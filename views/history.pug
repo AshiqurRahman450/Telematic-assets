@@ -1,0 +1,119 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Asset History
+      p.text-secondary.mb-0 Review the life cycle and assignment logs of company hardware
+    a.btn.btn-outline-light(href="/assets" style="border-color: var(--glass-border)")
+      i.fa-solid.fa-laptop.me-2
+      | Back to Assets
+
+  // Asset selector
+  .glass-card.mb-4
+    form(method="GET" action="/history")
+      .row.align-items-end.g-3
+        .col-md-8
+          label.form-label(for="assetId") Select Asset to Inspect
+          select#assetId.form-select(name="assetId" required=true onchange="this.form.submit()")
+            option(value="" disabled=!selectedAsset) -- Select an Asset (Active or Scrapped) --
+            each asset in allAssets
+              option(value=asset.id, selected=selectedAsset && selectedAsset.id === asset.id)= `${asset.uniqueId} - ${asset.make} ${asset.model} (SN: ${asset.serialNumber}, Status: ${asset.status})`
+        .col-md-4.text-end
+          if selectedAsset
+            a.btn.btn-outline-light(href="/history" style="border-color: var(--glass-border)") Clear Selector
+
+  if selectedAsset
+    .row.g-4
+      // Asset Details Card
+      .col-lg-4
+        .glass-card.h-100(class=selectedAsset.status === 'Scrapped' ? 'border-danger-subtle glow-card-danger' : selectedAsset.status === 'Issued' ? 'glow-card-info' : 'glow-card-success')
+          .d-flex.justify-content-between.align-items-center.mb-3
+            span.badge.text-uppercase.fw-bold(class=`badge-${selectedAsset.status.toLowerCase()}` style="font-size:0.75rem")= selectedAsset.status
+            code.text-light.fs-5= selectedAsset.uniqueId
+          
+          h4.fw-bold.text-light.mb-1= `${selectedAsset.make} ${selectedAsset.model}`
+          p.text-secondary.small.mb-3 Category: #{selectedAsset.category ? selectedAsset.category.name : 'N/A'}
+          
+          hr.my-3(style="border-color: var(--glass-border)")
+          
+          .mb-2.d-flex.justify-content-between
+            span.text-secondary Serial Number:
+            strong.text-light= selectedAsset.serialNumber
+          .mb-2.d-flex.justify-content-between
+            span.text-secondary Asset Value:
+            strong.text-success $#{selectedAsset.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          .mb-2.d-flex.justify-content-between
+            span.text-secondary Branch Location:
+            strong.text-light= selectedAsset.branch
+          
+          if selectedAsset.status === 'Issued' && selectedAsset.currentEmployee
+            hr.my-3(style="border-color: var(--glass-border)")
+            h6.text-uppercase.fw-bold.text-indigo.small.mb-2 Currently Assigned To
+            .d-flex.align-items-center
+              .fs-3.text-indigo.me-2
+                i.fa-solid.fa-user-tie
+              div
+                .fw-bold.text-light= selectedAsset.currentEmployee.name
+                small.text-secondary= selectedAsset.currentEmployee.employeeId
+
+      // Timeline Audit trail
+      .col-lg-8
+        .glass-card.h-100
+          h5.fw-bold.mb-4 Lifecycle Timeline Audit Trail
+          if history && history.length
+            .timeline
+              each item in history
+                - var actClass = item.action.toLowerCase()
+                .timeline-item(class=actClass)
+                  .d-flex.justify-content-between.align-items-start
+                    div
+                      span.badge.mb-1(class=`badge-${actClass === 'issued' ? 'issued' : actClass === 'scrapped' ? 'scrapped' : actClass === 'returned' ? 'stock' : 'stock'}` style="font-size:0.65rem") #{item.action.toUpperCase()}
+                      p.text-light.mb-1.fw-semibold= item.details
+                      if item.employee
+                        small.text-secondary.d-block 
+                          i.fa-solid.fa-user.me-1(style="font-size:0.8rem")
+                          | Involved Employee: #{item.employee.name} (#{item.employee.employeeId})
+                    span.timeline-time= new Date(item.date).toLocaleDateString('en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})
+          else
+            .text-center.py-5
+              i.fa-solid.fa-circle-info.text-secondary.fs-1.mb-3
+              p.text-secondary.mb-0 No history records found for this asset.
+
+  else
+    // General overview of system audit trail
+    .glass-card
+      h5.fw-bold.mb-4 Recent System Audit Logs
+      table.table.datatables.w-100
+        thead
+          tr
+            th Date
+            th Asset ID
+            th Asset Description
+            th Action
+            th Details
+            th Employee
+        tbody
+          each item in history
+            tr
+              td= new Date(item.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})
+              td
+                if item.asset
+                  a.fw-bold.text-indigo(href=`/history?assetId=${item.asset.id}`)
+                    code= item.asset.uniqueId
+                else
+                  span -
+              td
+                if item.asset
+                  strong.text-light= `${item.asset.make} ${item.asset.model}`
+                else
+                  span -
+              td
+                - var actClass = item.action.toLowerCase()
+                span.badge(class=`badge-${actClass === 'issued' ? 'issued' : actClass === 'scrapped' ? 'scrapped' : actClass === 'returned' ? 'stock' : 'stock'}`)= item.action
+              td= item.details
+              td
+                if item.employee
+                  span.text-light= item.employee.name
+                else
+                  span.text-secondary -

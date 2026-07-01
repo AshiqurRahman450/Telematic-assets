@@ -1,0 +1,74 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1= asset ? 'Edit Asset' : 'Add Asset'
+      p.text-secondary.mb-0= asset ? `Modify details for asset ${asset.uniqueId}` : 'Register a new physical asset in the company inventory'
+    a.btn.btn-outline-light(href="/assets" style="border-color: var(--glass-border)")
+      i.fa-solid.fa-arrow-left.me-2
+      | Back to Assets
+
+  if error_msg
+    .alert.alert-danger.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(239, 68, 68, 0.2)")
+      i.fa-solid.fa-exclamation-triangle.me-2
+      span= error_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  .row
+    .col-lg-8
+      .glass-card
+        form(action=asset ? `/assets/edit/${asset.id}` : '/assets/new', method="POST")
+          .row.g-3
+            .col-md-6
+              label.form-label(for="uniqueId") Asset Unique ID
+              input#uniqueId.form-control(type="text", name="uniqueId", placeholder="e.g. AST001", value=asset ? asset.uniqueId : '', required=true, readonly=!!asset)
+              if !asset
+                .form-text.text-secondary Custom identifier, e.g. AST104. Must be unique.
+            
+            .col-md-6
+              label.form-label(for="serialNumber") Serial Number
+              input#serialNumber.form-control(type="text", name="serialNumber", placeholder="e.g. SN-XYZ-987", value=asset ? asset.serialNumber : '', required=true)
+              .form-text.text-secondary Hardware manufacturer's serial number.
+            
+            .col-md-6
+              label.form-label(for="categoryId") Asset Category
+              select#categoryId.form-select(name="categoryId", required=true)
+                option(value="" disabled=!asset) Select Category...
+                each cat in categories
+                  option(value=cat.id, selected=asset && asset.categoryId === cat.id)= cat.name
+            
+            .col-md-6
+              label.form-label(for="branch") Branch Location
+              select#branch.form-select(name="branch", required=true)
+                option(value="" disabled=!asset) Select Location...
+                each b in ['New York', 'London', 'Tokyo', 'Berlin', 'Paris', 'Sydney']
+                  option(value=b, selected=asset && asset.branch === b)= b
+
+            .col-md-6
+              label.form-label(for="make") Make (Manufacturer)
+              input#make.form-control(type="text", name="make", placeholder="e.g. Dell, Apple, Makita", value=asset ? asset.make : '', required=true)
+            
+            .col-md-6
+              label.form-label(for="model") Model
+              input#model.form-control(type="text", name="model", placeholder="e.g. Latitude 5420, iPhone 13", value=asset ? asset.model : '', required=true)
+
+            .col-md-6
+              label.form-label(for="value") Asset Value ($)
+              input#value.form-control(type="number", step="0.01", name="value", placeholder="0.00", value=asset ? asset.value : '', required=true)
+              .form-text.text-secondary Financial value for depreciation tracking.
+            
+            if asset
+              .col-md-6
+                label.form-label(for="status") Status
+                select#status.form-select(name="status", required=true, disabled=true)
+                  option(value="Stock", selected=asset.status === 'Stock') In Stock
+                  option(value="Issued", selected=asset.status === 'Issued') Issued
+                  option(value="Scrapped", selected=asset.status === 'Scrapped') Scrapped
+                .form-text.text-secondary To change status, use the Issue/Return/Scrap operation pages.
+
+          .d-flex.gap-2.mt-4
+            button.btn.btn-primary-custom(type="submit")
+              i.fa-solid.fa-save.me-2
+              | Save Asset
+            a.btn.btn-outline-light(href="/assets" style="border-color: var(--glass-border)") Cancel

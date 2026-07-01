@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1= employee ? 'Edit Employee' : 'Add Employee'
+      p.text-secondary.mb-0= employee ? `Modify details for employee ${employee.employeeId}` : 'Register a new employee in the company master list'
+    a.btn.btn-outline-light(href="/employees" style="border-color: var(--glass-border)")
+      i.fa-solid.fa-arrow-left.me-2
+      | Back to Employees
+
+  if error_msg
+    .alert.alert-danger.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(239, 68, 68, 0.2)")
+      i.fa-solid.fa-exclamation-triangle.me-2
+      span= error_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  .row
+    .col-lg-8
+      .glass-card
+        form(action=employee ? `/employees/edit/${employee.id}` : '/employees/new', method="POST")
+          .row.g-3
+            .col-md-6
+              label.form-label(for="employeeId") Employee ID
+              input#employeeId.form-control(type="text", name="employeeId", placeholder="e.g. EMP001", value=employee ? employee.employeeId : '', required=true, readonly=!!employee)
+              if !employee
+                .form-text.text-secondary Must be a unique identifier.
+            
+            .col-md-6
+              label.form-label(for="name") Full Name
+              input#name.form-control(type="text", name="name", placeholder="e.g. John Doe", value=employee ? employee.name : '', required=true)
+            
+            .col-md-6
+              label.form-label(for="email") Email Address
+              input#email.form-control(type="email", name="email", placeholder="e.g. john.doe@company.com", value=employee ? employee.email : '', required=true)
+
+            .col-md-6
+              label.form-label(for="branch") Branch Location
+              select#branch.form-select(name="branch", required=true)
+                option(value="" disabled=!employee) Select Branch...
+                each b in ['New York', 'London', 'Tokyo', 'Berlin', 'Paris', 'Sydney']
+                  option(value=b, selected=employee && employee.branch === b)= b
+
+            .col-md-6
+              label.form-label(for="status") Status
+              select#status.form-select(name="status", required=true)
+                option(value="Active", selected=employee && employee.status === 'Active') Active
+                option(value="Inactive", selected=employee && employee.status === 'Inactive') Inactive
+              .form-text.text-secondary Inactive employees cannot be issued new assets.
+          
+          .d-flex.gap-2.mt-4
+            button.btn.btn-primary-custom(type="submit")
+              i.fa-solid.fa-save.me-2
+              | Save Employee
+            a.btn.btn-outline-light(href="/employees" style="border-color: var(--glass-border)") Cancel

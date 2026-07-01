@@ -1,0 +1,59 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Return Asset
+      p.text-secondary.mb-0 Process returned company property and document return reasons
+    a.btn.btn-outline-light(href="/assets" style="border-color: var(--glass-border)")
+      i.fa-solid.fa-arrow-left.me-2
+      | Cancel
+
+  if success_msg
+    .alert.alert-success.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(34, 197, 94, 0.2)")
+      i.fa-solid.fa-check-circle.me-2
+      span= success_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  if error_msg
+    .alert.alert-danger.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(239, 68, 68, 0.2)")
+      i.fa-solid.fa-exclamation-triangle.me-2
+      span= error_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  .row
+    .col-lg-8
+      .glass-card
+        form(action="/operations/return", method="POST")
+          .mb-4
+            label.form-label(for="assetId") Select Issued Asset to Return
+            select#assetId.form-select(name="assetId", required=true)
+              option(value="" selected=true disabled=true) -- Select an Issued Asset --
+              each asset in assets
+                option(value=asset.id)= `${asset.uniqueId} - ${asset.make} ${asset.model} (Issued to: ${asset.currentEmployee ? asset.currentEmployee.name : 'Unknown'}, SN: ${asset.serialNumber})`
+            .form-text.text-secondary Only assets currently in 'Issued' status are listed.
+
+          .mb-4
+            label.form-label(for="reason") Reason for Return
+            select#reason.form-select(name="reason", required=true)
+              option(value="" selected=true disabled=true) -- Select Reason for Return --
+              option(value="Upgrade") Hardware Upgrade
+              option(value="Repair") Technical Issue / Repair Required
+              option(value="Resignation") Employee Resignation
+              option(value="Project End") Project Completed
+              option(value="Routine Maintenance") Routine Maintenance
+              option(value="Other") Other (please specify in notes)
+
+          .mb-4
+            label.form-label(for="returnDate") Date of Return
+            input#returnDate.form-control(type="date", name="returnDate", value=new Date().toISOString().split('T')[0], required=true)
+
+          .mb-4
+            label.form-label(for="notes") Return Notes / Details (Optional)
+            textarea#notes.form-control(name="notes", rows="3", placeholder="Explain details about the hardware condition or upgrade path...")
+
+          .d-flex.gap-2.mt-4
+            button.btn.btn-primary-custom(type="submit")
+              i.fa-solid.fa-arrow-rotate-left.me-2
+              | Process Return
+            a.btn.btn-outline-light(href="/" style="border-color: var(--glass-border)") Cancel

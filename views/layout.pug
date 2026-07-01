@@ -1,0 +1,437 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title Asset Management System
+    // Fonts
+    link(rel="preconnect", href="https://fonts.googleapis.com")
+    link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap", rel="stylesheet")
+    // CSS Bootstrap & Icons & DataTables
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css", rel="stylesheet")
+    link(href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css", rel="stylesheet")
+    
+    style.
+      :root {
+        --bg-gradient-start: #0f172a;
+        --bg-gradient-end: #020617;
+        --glass-bg: rgba(30, 41, 59, 0.45);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-glow: rgba(99, 102, 241, 0.15);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --accent-color: #6366f1;
+        --accent-glow: rgba(99, 102, 241, 0.4);
+        --card-bg: rgba(15, 23, 42, 0.6);
+        --success-glow: rgba(34, 197, 94, 0.2);
+        --warning-glow: rgba(234, 179, 8, 0.2);
+        --danger-glow: rgba(239, 68, 68, 0.2);
+      }
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      /* Sidebar */
+      .sidebar {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(16px);
+        border-right: 1px solid var(--glass-border);
+        min-height: 100vh;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+      }
+      .sidebar-brand {
+        font-weight: 700;
+        font-size: 1.25rem;
+        background: linear-gradient(to right, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 0.5px;
+      }
+      .nav-link-custom {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-bottom: 0.4rem;
+        text-decoration: none;
+      }
+      .nav-link-custom i {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+      .nav-link-custom:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+      }
+      .nav-link-custom:hover i {
+        transform: scale(1.15);
+      }
+      .nav-link-custom.active {
+        background: var(--accent-color);
+        color: #ffffff;
+        box-shadow: 0 0 15px var(--accent-glow);
+      }
+      /* Glassmorphic cards */
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        padding: 1.75rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .glass-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.1);
+      }
+      .glow-card-info { box-shadow: 0 8px 32px 0 var(--glass-glow); }
+      .glow-card-success { box-shadow: 0 8px 32px 0 var(--success-glow); }
+      .glow-card-warning { box-shadow: 0 8px 32px 0 var(--warning-glow); }
+      .glow-card-danger { box-shadow: 0 8px 32px 0 var(--danger-glow); }
+
+      /* Form controls styling */
+      .form-control, .form-select {
+        background-color: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-radius: 8px;
+        padding: 0.625rem 1rem;
+        transition: all 0.3s ease;
+      }
+      .form-control:focus, .form-select:focus {
+        background-color: rgba(15, 23, 42, 0.8);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 10px var(--accent-glow);
+        color: var(--text-primary);
+      }
+      .form-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+      /* Buttons */
+      .btn-primary-custom {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: #ffffff;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      }
+      .btn-primary-custom:hover {
+        background: linear-gradient(135deg, #4f46e5, #4338ca);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+        transform: translateY(-1px);
+        color: #ffffff;
+      }
+      /* Tables & DataTables custom - FULL DARK MODE */
+      .dataTables_wrapper {
+        color: var(--text-secondary);
+      }
+      .dataTables_wrapper .dataTables_info {
+        color: var(--text-secondary) !important;
+      }
+      .dataTables_wrapper .dataTables_paginate .paginate_button {
+        color: var(--text-secondary) !important;
+        background: transparent !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 6px !important;
+        margin: 0 2px !important;
+      }
+      .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        color: var(--text-primary) !important;
+        background: rgba(99, 102, 241, 0.2) !important;
+        border-color: var(--accent-color) !important;
+      }
+      .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        color: #fff !important;
+        background: var(--accent-color) !important;
+        border-color: var(--accent-color) !important;
+      }
+      .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        color: rgba(148, 163, 184, 0.3) !important;
+        cursor: default;
+      }
+      /* Force dark on all table variants */
+      .table, table.dataTable {
+        --bs-table-bg: transparent !important;
+        --bs-table-striped-bg: rgba(30, 41, 59, 0.3) !important;
+        --bs-table-hover-bg: rgba(30, 41, 59, 0.5) !important;
+        --bs-table-color: var(--text-primary) !important;
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        border-collapse: separate !important;
+        border-spacing: 0 8px !important;
+      }
+      .table > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        border-bottom-color: var(--glass-border) !important;
+        box-shadow: none !important;
+      }
+      /* THEAD */
+      .table thead, table.dataTable thead {
+        background-color: transparent !important;
+      }
+      .table thead th, .table thead td,
+      table.dataTable thead th, table.dataTable thead td {
+        background-color: rgba(15, 23, 42, 0.5) !important;
+        color: var(--text-primary) !important;
+        border-bottom: 2px solid rgba(99, 102, 241, 0.25) !important;
+        border-top: none !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 12px !important;
+      }
+      /* TBODY */
+      .table tbody tr, table.dataTable tbody tr {
+        background-color: rgba(30, 41, 59, 0.25) !important;
+        transition: all 0.3s ease;
+      }
+      .table tbody tr:hover, table.dataTable tbody tr:hover {
+        background-color: rgba(99, 102, 241, 0.08) !important;
+      }
+      .table tbody td, .table tbody th,
+      table.dataTable tbody td, table.dataTable tbody th {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        border: none !important;
+        padding: 14px 12px !important;
+        vertical-align: middle;
+      }
+      table.dataTable tbody tr td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+      table.dataTable tbody tr td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      /* TFOOT */
+      .table tfoot, table.dataTable tfoot {
+        background-color: transparent !important;
+      }
+      .table tfoot tr, table.dataTable tfoot tr {
+        background-color: rgba(99, 102, 241, 0.06) !important;
+      }
+      .table tfoot td, .table tfoot th,
+      table.dataTable tfoot td, table.dataTable tfoot th {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        border-top: 2px solid rgba(99, 102, 241, 0.25) !important;
+        border-bottom: none !important;
+        padding: 14px 12px !important;
+      }
+      /* Sorting icons */
+      table.dataTable thead .sorting::before,
+      table.dataTable thead .sorting::after,
+      table.dataTable thead .sorting_asc::before,
+      table.dataTable thead .sorting_asc::after,
+      table.dataTable thead .sorting_desc::before,
+      table.dataTable thead .sorting_desc::after {
+        opacity: 0.4;
+        color: var(--text-secondary) !important;
+      }
+      table.dataTable thead .sorting_asc::after,
+      table.dataTable thead .sorting_desc::before {
+        opacity: 1;
+        color: var(--accent-color) !important;
+      }
+      /* Pagination */
+      .page-item.active .page-link {
+        background-color: var(--accent-color) !important;
+        border-color: var(--accent-color) !important;
+        color: #fff !important;
+      }
+      .page-link {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid var(--glass-border) !important;
+        color: var(--text-secondary) !important;
+      }
+      .page-link:hover {
+        color: var(--text-primary) !important;
+        background-color: rgba(15, 23, 42, 0.8) !important;
+      }
+      /* DataTables filter input & length select */
+      .dataTables_filter input {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid var(--glass-border) !important;
+        color: var(--text-primary) !important;
+        border-radius: 8px;
+        padding: 4px 8px;
+      }
+      .dataTables_filter input::placeholder {
+        color: var(--text-secondary) !important;
+      }
+      .dataTables_filter label {
+        color: var(--text-secondary) !important;
+      }
+      .dataTables_length label {
+        color: var(--text-secondary) !important;
+      }
+      .dataTables_length select {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid var(--glass-border) !important;
+        color: var(--text-primary) !important;
+        border-radius: 6px;
+      }
+      /* DataTables empty row */
+      .dataTables_empty {
+        color: var(--text-secondary) !important;
+        background-color: transparent !important;
+      }
+      /* Bootstrap table-striped dark override */
+      .table-striped > tbody > tr:nth-of-type(odd) > * {
+        --bs-table-bg-type: rgba(30, 41, 59, 0.15) !important;
+        color: var(--text-primary) !important;
+      }
+      /* Badges & Timeline */
+      .badge-stock {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+      .badge-issued {
+        background-color: rgba(99, 102, 241, 0.15);
+        color: #818cf8;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .badge-scrapped {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .badge-active {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+      .badge-inactive {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      /* Audit Timeline styles */
+      .timeline {
+        border-left: 2px solid var(--glass-border);
+        padding: 1rem 0;
+        position: relative;
+        margin-left: 1rem;
+      }
+      .timeline-item {
+        position: relative;
+        padding-left: 2.5rem;
+        margin-bottom: 2rem;
+      }
+      .timeline-item::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        left: -9px;
+        top: 4px;
+        border: 3px solid var(--bg-gradient-start);
+      }
+      .timeline-item.purchased::after { background-color: #3b82f6; }
+      .timeline-item.issued::after { background-color: #6366f1; }
+      .timeline-item.returned::after { background-color: #eab308; }
+      .timeline-item.scrapped::after { background-color: #ef4444; }
+      .timeline-time {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+  body
+    .container-fluid
+      .row
+        // Sidebar Navigation
+        nav.col-md-3.col-lg-2.d-md-block.sidebar.collapse.p-3
+          .d-flex.align-items-center.mb-4.px-2
+            i.fa-solid.fa-cubes.text-indigo.fs-3.me-2(style="color:#818cf8")
+            span.sidebar-brand TELEMATIC ASSETS
+          
+          ul.nav.flex-column
+            li.nav-item
+              a.nav-link-custom(href="/", class=(path === '/' ? 'active' : ''))
+                i.fa-solid.fa-chart-pie
+                span Dashboard
+            li.nav-item
+              a.nav-link-custom(href="/categories", class=(path.startsWith('/categories') ? 'active' : ''))
+                i.fa-solid.fa-tags
+                span Categories
+            li.nav-item
+              a.nav-link-custom(href="/employees", class=(path.startsWith('/employees') ? 'active' : ''))
+                i.fa-solid.fa-users
+                span Employees
+            li.nav-item
+              a.nav-link-custom(href="/assets", class=(path.startsWith('/assets') && !path.includes('history') ? 'active' : ''))
+                i.fa-solid.fa-laptop
+                span Assets
+            li.nav-item
+              a.nav-link-custom(href="/stock", class=(path.startsWith('/stock') ? 'active' : ''))
+                i.fa-solid.fa-warehouse
+                span Stock View
+            
+            hr.my-3(style="border-color: var(--glass-border)")
+            
+            li.nav-item
+              span.px-3.text-uppercase.font-monospace(style="font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 1px;") Operations
+            li.nav-item.mt-2
+              a.nav-link-custom(href="/operations/issue", class=(path === '/operations/issue' ? 'active' : ''))
+                i.fa-solid.fa-handshake
+                span Issue Asset
+            li.nav-item
+              a.nav-link-custom(href="/operations/return", class=(path === '/operations/return' ? 'active' : ''))
+                i.fa-solid.fa-arrow-rotate-left
+                span Return Asset
+            li.nav-item
+              a.nav-link-custom(href="/operations/scrap", class=(path === '/operations/scrap' ? 'active' : ''))
+                i.fa-solid.fa-trash-can
+                span Scrap Asset
+            
+            hr.my-3(style="border-color: var(--glass-border)")
+            
+            li.nav-item
+              a.nav-link-custom(href="/history", class=(path.includes('/history') ? 'active' : ''))
+                i.fa-solid.fa-clock-rotate-left
+                span Asset History
+
+        // Main Content Area
+        main.col-md-9.ms-sm-auto.col-lg-10.px-md-4.py-4
+          block content
+
+    // JavaScript Core & DataTables
+    script(src="https://code.jquery.com/jquery-3.7.0.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+    script(src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js")
+    script(src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js")
+    script.
+      $(document).ready(function() {
+        if ($('.datatables').length) {
+          $('.datatables').DataTable({
+            responsive: true,
+            language: {
+              search: "_INPUT_",
+              searchPlaceholder: "Search records..."
+            }
+          });
+        }
+      });
+    block scripts

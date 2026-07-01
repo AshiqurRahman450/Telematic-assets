@@ -1,0 +1,50 @@
+extends layout
+
+block content
+  .d-flex.justify-content-between.align-items-center.pb-3.mb-4.border-bottom(style="border-color: var(--glass-border) !important")
+    div
+      h1.h2.fw-bold.mb-1 Employee Master
+      p.text-secondary.mb-0 Add, edit, and filter corporate employees
+    a.btn.btn-primary-custom(href="/employees/new")
+      i.fa-solid.fa-user-plus.me-2
+      | Add Employee
+
+  if success_msg
+    .alert.alert-success.alert-dismissible.fade.show.border-0.text-light(role="alert" style="background: rgba(34, 197, 94, 0.2)")
+      i.fa-solid.fa-check-circle.me-2
+      span= success_msg
+      button.btn-close.btn-close-white(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+  // Filter Toolbar
+  .d-flex.gap-2.mb-4
+    a.btn.btn-sm.px-3(href="/employees", class=(statusFilter === 'all' ? 'btn-primary-custom' : 'btn-outline-light') style=statusFilter !== 'all' ? "border-color: var(--glass-border)" : "") All Statuses
+    a.btn.btn-sm.px-3(href="/employees?status=Active", class=(statusFilter === 'Active' ? 'btn-primary-custom' : 'btn-outline-light') style=statusFilter !== 'Active' ? "border-color: var(--glass-border)" : "") Active Only
+    a.btn.btn-sm.px-3(href="/employees?status=Inactive", class=(statusFilter === 'Inactive' ? 'btn-primary-custom' : 'btn-outline-light') style=statusFilter !== 'Inactive' ? "border-color: var(--glass-border)" : "") Inactive Only
+
+  .glass-card
+    table.table.datatables.w-100
+      thead
+        tr
+          th Employee ID
+          th Name
+          th Email
+          th Branch
+          th Status
+          th Actions
+      tbody
+        each emp in employees
+          tr
+            td
+              code.text-light= emp.employeeId
+            td
+              strong.text-light= emp.name
+            td= emp.email
+            td
+              i.fa-solid.fa-location-dot.text-secondary.me-1
+              span= emp.branch
+            td
+              span.badge(class=emp.status === 'Active' ? 'badge-active' : 'badge-inactive')= emp.status
+            td
+              a.btn.btn-sm.btn-outline-indigo.me-2(href=`/employees/edit/${emp.id}` style="border-color: var(--glass-border); color: #818cf8; transition: all 0.2s")
+                i.fa-solid.fa-user-pen.me-1
+                | Edit
