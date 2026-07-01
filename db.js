@@ -4,7 +4,7 @@ const sequelize = new Sequelize('demodb', 'postgres', 'admin', {
   host: 'localhost',
   dialect: 'postgres',
   port: 5432,
-  logging: false, // Set to console.log if debugging SQL queries
+  logging: false, 
   pool: {
     max: 5,
     min: 0,
