@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const sequelize = require('./db');
-require('./models'); // Ensure models and associations are loaded
+require('./models'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
