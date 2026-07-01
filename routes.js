@@ -3,7 +3,7 @@ const router = express.Router();
 const { Op } = require('sequelize');
 const { Employee, AssetCategory, Asset, AssetHistory } = require('./models');
 
-// Middleware to inject current URL path into templates (for sidebar active matching)
+
 router.use((req, res, next) => {
   res.locals.path = req.path;
   res.locals.success_msg = req.query.success;
